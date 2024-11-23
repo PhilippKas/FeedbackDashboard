@@ -1,14 +1,15 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 
 import * as d3 from "d3";
 
-// const marginTop = 30;
-// const marginBottom = 70;
-// const marginLeft = 50;
-// const marginRight = 25;
-
-const TpOverview = ({ width, height, data }) => {
+const TpOverview = ({ width, height, data}) => {
     const svgRef = useRef();
+    const navigate = useNavigate();
+
+    const handlePointClick = (name) => {
+        navigate(`/tpview/${name}`);
+    };
 
     useEffect(() => {
         const svg = d3.select(svgRef.current);
@@ -58,7 +59,10 @@ const TpOverview = ({ width, height, data }) => {
             .attr("cx", (d) => xScale(d.name))
             .attr("cy", (d) => yScale(d.rating))
             .attr("r", 6)
-            .attr("fill", "steelblue");
+            .attr("fill", "steelblue")
+            .on("click", (event, d) => {
+                handlePointClick(d.name);
+            });
 
         // Add horizontal line at 4 stars
         svg
@@ -83,7 +87,7 @@ const TpOverview = ({ width, height, data }) => {
             .style("font-size", "10px")
             .attr("fill", "white");
         
-    }, []);
+    }, [width, height, data]);
 
     return <svg ref={svgRef} width={width} height={height}></svg>;
 }
