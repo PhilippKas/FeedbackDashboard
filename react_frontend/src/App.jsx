@@ -1,54 +1,39 @@
-import { 
-  BrowserRouter as Router, Route, Routes, useNavigate
+import { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router, Route, Routes
 } from 'react-router-dom';
-
-import { useState, useEffect } from 'react'
-
 import TpOverview from "./components/TpOverview"
 import TpDetailed from "./components/TpDetailed"
 
 function App() {
+
   const [tpData, setTpData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function getData() {
       try {
-        
-        const url = 'http://127.0.0.1:8000/tp_overview';
-        const queryParams = new URLSearchParams({
-          start_date: '2024-04-01',
-          end_date: '2024-06-01',
-        }).toString();
-
-        const response = await fetch(`${url}?${queryParams}`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        const response = await fetch(
+          'http://localhost:8000/api/v1/analytics/tp_overview?start_date=2024-01-01&end_date=2024-04-01'
+        );
         const data = await response.json();
+        console.log(data)
+
         setTpData(data);
-        setIsLoading(false);
+
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setError(error.message);
+        console.error('Error:', error);
+      
+      } finally {
         setIsLoading(false);
       }
-    };
-  
-    fetchData();
+    }
+
+    getData();
   }, []);
 
-  // Handle loading state
   if (isLoading) {
     return <div>Loading...</div>;
-  }
-
-  // Handle error state
-  if (error) {
-    return <div>Error: {error}</div>;
   }
 
   return (

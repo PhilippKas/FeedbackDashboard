@@ -21,7 +21,7 @@ const TpOverview = ({ width, height, data}) => {
         // Define scales
         const xScale = d3
             .scalePoint()
-            .domain(data.map((d) => d.name))
+            .domain(data.map((d) => d.Tool))
             .range([margin.left, width - margin.right])
             .padding(.5);
 
@@ -56,12 +56,12 @@ const TpOverview = ({ width, height, data}) => {
             .selectAll("circle")
             .data(data)
             .join("circle")
-            .attr("cx", (d) => xScale(d.name))
-            .attr("cy", (d) => yScale(d.rating))
+            .attr("cx", (d) => xScale(d.Tool))
+            .attr("cy", (d) => yScale(d.Rating))
             .attr("r", 6)
             .attr("fill", "steelblue")
             .on("click", (event, d) => {
-                handlePointClick(d.name);
+                handlePointClick(d.Tool);
             });
 
         // Add horizontal line at 4 stars
@@ -80,10 +80,10 @@ const TpOverview = ({ width, height, data}) => {
             .data(data)
             .join("text")
             .attr("class", "label")
-            .attr("x", (d) => xScale(d.name))
-            .attr("y", (d) => yScale(d.rating) - 10)
+            .attr("x", (d) => xScale(d.Tool))
+            .attr("y", (d) => yScale(d.Rating) - 10)
             .attr("text-anchor", "middle")
-            .text((d) => d.rating.toFixed(1))
+            .text((d) => d.Rating.toFixed(1))
             .style("font-size", "10px")
             .attr("fill", "white");
         
