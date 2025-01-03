@@ -5,47 +5,21 @@ import {
 import TpOverview from "./components/TpOverview"
 import TpDetailed from "./components/TpDetailed"
 import DateSelector from './components/DateSelector';
+import { useTPData } from './hooks/useTpData';
 
 function App() {
 
-  const [tpData, setTpData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState('2024-01-01');
   const [endDate, setEndDate] = useState('2024-04-01');
-
-  const fetchData = async (start, end ) => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        `http://localhost:8000/api/v1/analytics/tp_overview?start_date=${start}&end_date=${end}`
-      );
-      const data = await response.json();
-      console.log(data)
-
-      setTpData(data);
-
-    } catch (error) {
-      console.error('Error:', error);
-    
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-      fetchData(startDate, endDate);
-    }, [startDate, endDate]
-  );
+  const { tpData, isLoading, error } = useTPData(startDate, endDate);
 
   const handleDateChange = (newStartDate, newEndDate) => {
     setStartDate(newStartDate);
     setEndDate(newEndDate);
-  };  
+  };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
 
   return (
     <Router>
