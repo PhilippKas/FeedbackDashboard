@@ -1,10 +1,12 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import * as d3 from "d3";
 
-const TpOverview = ({ width, height, data}) => {
+const TpOverview = ({data}) => {
     const svgRef = useRef();
+    const containerRef = useRef();
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const navigate = useNavigate();
 
     const handlePointClick = (name) => {
@@ -12,6 +14,26 @@ const TpOverview = ({ width, height, data}) => {
     };
 
     useEffect(() => {
+
+        const observer = new ResizeObserver((entries) => {
+            const entry = entries[0];
+            const { width, height } = entry.contentRect;
+            console.log(width)
+            console.log(height)
+            setDimensions({ width, height });
+        });
+
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []); 
+
+    useEffect(() => {
+
+        const { width, height } = dimensions;
+
         const svg = d3.select(svgRef.current);
         const margin = { top: 20, right: 20, bottom: 100, left: 80 };
 
@@ -87,9 +109,13 @@ const TpOverview = ({ width, height, data}) => {
             .style("font-size", "10px")
             .attr("fill", "white");
         
-    }, [width, height, data]);
+    }, [dimensions, data]);
 
-    return <svg ref={svgRef} width={width} height={height}></svg>;
+    return (
+        <div ref={containerRef} style={{ width: "70%", height: "500px" }}>
+            <svg ref={svgRef} width={dimensions.width} height={dimensions.height}></svg>
+        </div>
+    );
 }
 
 export default TpOverview;
